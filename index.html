@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>D3 cloud</title>
+    <script src="./d3/d3.js"></script>
+    <script src="./d3/Responsive_Wordle.js"></script>
+    <style>
+        body{
+            text-align: center;
+        }
+        #vis{
+            position: absolute;
+            top: 10%;
+            left: 10%;
+        }
+    </style>
+</head>
+<body>
+<div id="vis"></div>
+<script>
+
+    var inputwords=['发展', '中国', '人民', '建设', '社会', '坚持', '党', '全面', '国家', '实现', '制度', '推进', '特色', '社会', '政治', '新', '加强', '体系', '文化', '时代', '我们', '必须', '经济', '伟大', '完善', '我国', '现代', '推动', '安全', '创新', '更加', '民主', '民族', '改革', '工作', '增强', '不断', '战略', '治理', '领导', '问题', '加快', '深化', '对', '世界', '中', '文明', '复兴', '坚决', '提高', '生态', '基本', '法治', '教育', '思想', '生活', '民族', '重大', '能力', '统一', '促进', '历史', '更', '全党', '构建', '群众', '健全', '国际', '维护', '保障', '建成', '二', '形成', '人类', '解决', '团结', '监督', '理论', '斗争', '实践', '事业', '从', '机制', '协商', '保护', '组织', '政策', '统筹', '实施', '体制', '党内', '合作', '一个', ' 要求', '基础', '支持', '贯彻', '依法', '强国', '创造', '共同', '强 化', '中国', '重要', '奋斗', '精神', '政府', '方式', '建立', '反 对', '干部', '全体', '小康', '同志', '保持', '全', '军队', '力量', '道路', '让', '始终', '根本', '成为', '有效', '和平', '作用', '梦', '方面', '领导', '巩固', '科学', '绿色', '坚定', '香港', '生活', '国家', '取得', '来', '协调', '深入', '积极', '开展', '持续', '自信', '稳定', '农村', '国防', '澳门', '原则', '强大', '保 证', '自觉', '确保', '发挥', '理念', '主体', '水平', '马克思', '管理', '就业', '强军', '命运', '建设', '走', '和谐', '梦想', '革命', '利益', '开放', '基层', '○', '作为', '带领', '全国', '质量', '农业', '繁荣', '扩大', '健康', '全球', '军事', '军队', '意识', '突出', '长期', '没有', '将', '进行', '本领', '依法', '深刻', '变化', '勇于', '变革', '当家', '广泛', '全民', '体制', '核心', '两岸', '具有', '面临', '民生', '各国', '关系', '各种', '引领', '培育', '生产', '现代', '政党', '进入', '继续', '各族', '提升', '优化', '领域', '活力', '弘扬', '脱贫', '收入', '环境','中央', '纪律', '执政', '矛盾', '科技', '明确', '服务', '注重', '人才', '产业', '夺取', '阶段', '使命', '这个', '一定', '与', '五年', '总', '开放', '中央', '五', '作出', '区域', '着力', '权力', '传统', '实力', '覆盖', '牢牢', '活动', '坚强', '目标', '担当', '提出', '提供', '需要', '落实', '同胞', '认识', '结合', '方向', '新型', '参与', '树立', '重点', '培养', '党员', '决胜', '目标', '以来', '机构', '坚定', '有机', '意识', '地位', '价值观', '改善', '引导', '格局', '宪法', '分裂', '共同体', '力', '做', '风险', '考验', '充分', '城乡', '增长', '更好', '美丽', '进步', '祖国', '三', '行动', '四', '融合', '自然', '自我', '人大', '主题', '激励', '复杂', '挑战', '历史性', '治党', '布局', '增长', '供给', '成果', '立法', '指导', '显著', '全党', '应对', '赋予', '大国', '条件', '倡导', '权威', '标准', '最大', '反腐败', '不能', '平衡', '强', '努力', '起来', '正确', '人民', '作风', '各项', '共享', '市场', '形式', '生态', '两个', '善于', '企业', '导向', '青年', '职责', '党组织', '文艺', '人人', '年', '初心', '动力', '永远', '面对', '一系列', '深化', '完成', '前列', '监察', '司法', '优秀', '得到', '文化', '中心', '力度', '任务', '方针', '交流', '两岸', '外交', '良好', '学习', '信念', '腐', '许多', '存在', '关心', '富裕', '公平', '满足', '一百年', '先进', '工程', '系统', '鼓励', '六', '法律', '能够', '防治', '有序', '消费', '网络', '服务', '地区', '各类', '防止', '贸易', '行使', '现实', '胜利', '谋', '幸福'];
+    //var inputwords = ['TEST','Hello','World','test','HAHAHA'];
+    var inputtags = inputwords.map(function(d) {return {text: d, size: 10 + Math.random() * 20};})
+
+    let InitW = document.documentElement.clientWidth;
+    let InitH = document.documentElement.clientHeight;
+
+    var fill = d3.scale.category20();
+
+    var layout = d3.layout.cloud()
+        .size([~~(0.8 * InitW), ~~(0.8 * InitH)])
+        .words(inputtags)
+        .rotate(function() {
+            return 0;
+            // return ~~(Math.random() * 2) * 90;
+        })
+        .font("Impact")
+        .fontSize(function(d) { return d.size; });
+
+    var words = layout.start();
+
+    function draw(words, w, h) {
+
+        let rate = w * h,
+            j=0;
+
+        /*
+            d3.select("#vis").append("svg")
+            .attr("width", w)
+            .attr("height", h)
+            .append("g")
+            .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")")
+            .selectAll("text")
+            .data(words)
+            .enter().append("text")
+            .style("font-size",function (d) {
+                return ~~(Math.sqrt(d.size * rate / 2) - 1)  + "px";
+            })
+            //.style("width", function(d) {return 200 + "px"; })
+            //.style("height", function(d) {return 100 + "px"; })
+            .style("font-family", "Impact")
+            .style("fill", function(d, i) {return fill(i); })
+            .attr("text-anchor", "middle")
+            .attr("transform", function(d) {
+                return "translate(" + [d.x * w, d.y * h] + ")rotate(" + d.rotate + ")";
+            })
+            .text(function(d) { return d.text; });
+
+         */
+
+        d3.select("#vis").append("svg")
+            .attr("width", w)
+            .attr("height", h)
+            .append("g")
+            .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")")
+            .selectAll("rect")
+            .data(words)
+            .enter().append("rect")
+            .attr('x',function (d) {
+                return d.LeftUpX * w;
+            })
+            .attr('y',function (d){
+                return d.LeftUpY * h;
+            })
+            .attr("width", function(d) {return d.RateWidth * w; })
+            .attr("height", function(d) {return d.RateHeight * h; })
+            .attr('stroke', 'red')
+            .attr("fill","white");
+
+        d3.select("g")
+            .selectAll("text")
+            .data(words)
+            .enter().append("text")
+            .attr("id",function(d){
+                j++;
+                let CurId = "id" + j;
+                return CurId;
+            })
+            .style("font-size",function (d) {
+                return ~~(Math.sqrt(d.size * rate / 2) - 1)  + "px";
+            })
+            .style("font-family", "Impact")
+            .style("fill", function(d, i) {return fill(i); })
+            .attr("text-anchor", "middle")
+            .attr("transform", function(d) {
+                return "translate(" + [d.x * w, d.y * h] + ")rotate(" + d.rotate + ")";
+            })
+            .text(function(d) { return d.text; });
+
+        let n = words.length;
+
+        for(let i = 1;i <= n;i++){
+
+            //console.log(words[i-1].text);
+            let CurId = "#id"+i,
+                CurFontSize = ~~(Math.sqrt(words[i-1].size * rate / 2) - 1);
+
+            let groupElement = document.getElementById("id"+i);
+            let bboxGroup = groupElement.getBoundingClientRect();
+
+            let CurX = words[i-1].CenterX * w,
+                CurY = words[i-1].CenterY * h;
+
+            let CurWidth = bboxGroup.width,
+                CurHeight = bboxGroup.height,
+                BoundingWidth = words[i-1].RateWidth * w,
+                BoundingHeight = words[i-1].RateHeight * h;
+
+            if((BoundingWidth < BoundingHeight && words[i-1].rotate == 0)||(BoundingWidth > BoundingHeight && words[i-1].rotate == 90)){
+                console.log("Before: " + CurWidth +", " + CurHeight+", "+words[i-1].rotate);
+                let tmp = CurWidth;
+                CurWidth = CurHeight;
+                CurHeight = tmp;
+                words[i-1].rotate = 90 - words[i-1].rotate;
+            }
+
+            console.log("After: " + CurWidth +", " + CurHeight+", "+words[i-1].rotate);
+
+            let FontBounding = new Object();
+            let BoxBounding = new Object();
+
+            FontBounding.x0 = CurX - CurWidth / 2;
+            FontBounding.y0 = CurY + CurHeight / 2;
+            FontBounding.x1 = CurX + CurWidth / 2;
+            FontBounding.y1 = CurY - CurHeight / 2;
+
+            BoxBounding.x0 = CurX - BoundingWidth / 2;
+            BoxBounding.y0 = CurY + BoundingHeight / 2;
+            BoxBounding.x1 = CurX + BoundingWidth / 2;
+            BoxBounding.y1 = CurY - BoundingHeight / 2;
+
+            //console.log(FontBounding);
+            //console.log(BoxBounding);
+
+            let p = d3.select("body").select("svg").select("g").select(CurId);
+
+            while(!((FontBounding.x0 >= BoxBounding.x0)&&(FontBounding.y0 <= BoxBounding.y0)&&(FontBounding.x1 <= BoxBounding.x1)&&(FontBounding.y1 >= BoxBounding.y1))){
+                CurFontSize--;
+                if(CurFontSize <= 0){
+                    break;
+                }
+
+                //水平
+                if(words[i-1].rotate == 0){
+                    p.attr("transform","translate(" + [CurX, FontBounding.y0] + ")rotate(" + words[i-1].rotate + ")")
+                        .style("font-size",CurFontSize+"px");
+                }
+                //竖直
+                else{
+                    p.attr("transform","translate(" + [FontBounding.x0,CurY] + ")rotate(" + words[i-1].rotate + ")")
+                        .style("font-size",CurFontSize+"px");
+                }
+                groupElement = document.getElementById("id"+i);
+                bboxGroup = groupElement.getBoundingClientRect();
+                CurWidth = bboxGroup.width;
+                CurHeight = bboxGroup.height;
+                FontBounding.x0 = CurX - CurWidth / 2;
+                FontBounding.y0 = CurY + CurHeight / 2;
+                FontBounding.x1 = CurX + CurWidth / 2;
+                FontBounding.y1 = CurY - CurHeight / 2;
+            }
+
+            //水平
+            if(words[i-1].rotate == 0){
+                p.attr("transform","translate(" + [CurX, FontBounding.y0 - CurHeight / 5] + ")rotate(" + words[i-1].rotate + ")")
+                    .style("font-size",CurFontSize+"px");
+            }
+            //竖直
+            else{
+               p.attr("transform","translate(" + [FontBounding.x0 + CurWidth / 5,CurY] + ")rotate(" + words[i-1].rotate + ")")
+                    .style("font-size",CurFontSize+"px");
+            }
+
+        }
+
+    }
+
+    function ReSize(){
+
+        let obj = document.getElementById("vis");
+        obj.innerHTML = "";
+
+        let w = document.documentElement.clientWidth;
+        let h = document.documentElement.clientHeight;
+
+        draw(words,~~(0.8 * w),~~(0.8 * h));
+
+    }
+
+    window.addEventListener("resize",ReSize);
+
+    ReSize();
+
+</script>
+</body>
+</html>
