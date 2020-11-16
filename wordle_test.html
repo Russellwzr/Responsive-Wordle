@@ -1,0 +1,177 @@
+<html>
+<head>
+    <title>Box2dJS</title>
+</head>
+<body onload="init();">
+</body>
+<script src="js/Box2d.min.js"></script>
+
+<script>
+
+    function init() {
+
+        var   b2Vec2 = Box2D.Common.Math.b2Vec2
+            ,  b2AABB = Box2D.Collision.b2AABB
+            ,  b2BodyDef = Box2D.Dynamics.b2BodyDef
+            ,  b2Body = Box2D.Dynamics.b2Body
+            ,  b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+            ,  b2Fixture = Box2D.Dynamics.b2Fixture
+            ,  b2World = Box2D.Dynamics.b2World
+            ,  b2MassData = Box2D.Collision.Shapes.b2MassData
+            ,  b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+            ,  b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+            ,  b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+            ,  b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef
+        ;
+
+        var worldScale = 30; // box2d中以米为单位，1米=30像素
+        var gravity = new b2Vec2(0, 0);
+        var sleep = true;
+        var world;
+        var velIterations = 10;// 速率约束解算器
+        var posIterations = 10;// 位置约束解算器
+        var UpdateNum;
+        var SetInter;
+        const CenterX = 320;
+        const CenterY = 240;
+        var BodyTop,BodyBottom,BodyLeft,BodyRight;
+
+        function main(){
+
+            world = new b2World(gravity, sleep);
+            debugDraw();
+            RectBox(200,400,100,50);
+            RectBox(200,400,100,50);
+            RectBox(30,405,200,50);
+            BodyTop = Boundary(CenterX/2,0,1,1);
+            BodyBottom = Boundary(CenterX/2,CenterY,1,1);
+            BodyLeft = Boundary(0,CenterY/2,1,1);
+            BodyRight = Boundary(CenterX,CenterY/2,1,1);
+            UpdateNum = 0;
+            SetInter =setInterval(updateWorld, 1000 / 60);
+
+        }
+
+        main();
+
+        function RectBox(px, py, w, h){
+
+            var bodyDef = new b2BodyDef();
+            bodyDef.position.Set(px/worldScale, py/worldScale);
+            bodyDef.type = b2Body.b2_dynamicBody;
+            var polygonShape = new b2PolygonShape();
+            polygonShape.SetAsBox(w/2/worldScale, h/2/worldScale);
+            var fixtureDef = new b2FixtureDef();
+            fixtureDef.shape = polygonShape;
+            fixtureDef.density = 1;
+            fixtureDef.restitution = 1;
+            fixtureDef.friction = 0;
+            var theBrick = world.CreateBody(bodyDef);
+            theBrick.CreateFixture(fixtureDef);
+            theBrick.m_rotation = 0;
+            theBrick.m_torque = 0;
+            theBrick.SetAngularVelocity(0);
+
+        }
+
+        function Boundary(px,py,w,h){
+            var bodyDef = new b2BodyDef();
+            bodyDef.position.Set(px/worldScale, py/worldScale);
+            bodyDef.type = b2Body.b2_staticBody;
+            var polygonShape = new b2PolygonShape();
+            polygonShape.SetAsBox(w/2/worldScale, h/2/worldScale);
+            var fixtureDef = new b2FixtureDef();
+            fixtureDef.shape = polygonShape;
+            fixtureDef.density = 1;
+            fixtureDef.restitution = .3;
+            fixtureDef.friction = .8;
+            var theBrick = world.CreateBody(bodyDef);
+            theBrick.CreateFixture(fixtureDef);
+            return theBrick;
+        }
+
+        function updateWorld() {
+
+            UpdateNum++;
+            if(UpdateNum == 60 * 2){
+                for(let b = world.m_bodyList; b != null; b = b.m_next){
+                    b.SetAngle(0);
+                    //console.log(b.GetAngle() * 180 / Math.PI);
+                }
+                clearInterval(SetInter);
+                return;
+            }
+
+            const ForceScale = 50000;
+
+            for (let b = world.m_bodyList; b != null; b = b.m_next){
+
+                const distanceX = CenterX - (b.GetPosition().x) * worldScale;
+                const distanceY = CenterY - (b.GetPosition().y) * worldScale;
+                const distanceXY =Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+                //b.type = b2Body.b2_staticBody;
+                //console.log("("+distanceX+","+distanceY+","+distanceXY+")");
+
+                if(distanceXY < 50){
+                    b.SetLinearVelocity	(new b2Vec2(0,0));
+                    //b.ApplyForce(new b2Vec2(0,0),new b2Vec2(CenterX/worldScale,CenterY/worldScale));
+                }
+                else{
+
+                    let ForceXY = ForceScale / (distanceXY);
+                    let ForceX = ForceXY * distanceX / distanceXY;
+                    let ForceY = ForceXY * distanceY / distanceXY;
+                    b.ApplyForce(new b2Vec2(ForceX,ForceY),new b2Vec2(CenterX/worldScale,CenterY/worldScale));
+
+                }
+
+                b.SetAngle(0);
+                b.SetAngularVelocity(0);
+                b.fixedRotation = true;
+                b.m_rotation = 0;
+                b.m_torque = 0;
+                b.m_rotation = 0;
+                b.m_rotation0 = 0;
+                b.ApplyTorque = 0;
+
+            }
+
+            for (let b = world.m_contactList; b; b = b.m_next)
+                // 遍历contactlist所有世界，直到b不存在，跳出循环
+            {
+                // 将b里的两个刚体分别定义为b1和b2
+                let b1 = b.m_fixtureA.m_body;
+                let b2 = b.m_fixtureB.m_body;
+                // 向下执行的条件是b1和b2不同，且挡板
+                if ((b1 != b2) && (b1 != BodyBottom) && (b1 != BodyTop) && (b1 != BodyLeft) && (b1 != BodyRight) && (b2 != BodyBottom) && (b2 != BodyTop) && (b2 != BodyLeft) && (b2 != BodyRight)){
+
+                    b1.SetAngularVelocity(0);
+                    b2.SetAngularVelocity(0);
+                    b1.SetAngle(0);
+                    b2.SetAngle(0);
+                    //b1.SetLinearVelocity(0);
+
+                }
+            }
+
+            world.Step(1/60, velIterations, posIterations);// 更新世界模拟
+            world.DrawDebugData(); // 显示刚体debug轮廓
+            world.ClearForces(); // 清除作用力
+
+        }
+
+        //setup debug draw
+        function debugDraw(){
+            var debugDraw = new b2DebugDraw();
+            debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
+            debugDraw.SetDrawScale(worldScale);
+            debugDraw.SetFillAlpha(0.5);
+            debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+            world.SetDebugDraw(debugDraw);
+        }
+    };
+
+</script>
+
+
+</html>

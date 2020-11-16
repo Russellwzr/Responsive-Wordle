@@ -144,7 +144,7 @@ function WeightWordBox(data,size){
         .selectAll("text")
         .data(data)
         .enter().append("text")
-        .style("font-size", function(d) { return ~~(Math.sqrt(d.size * TotalSquare / 2) - 1) * 0.8  + "px"; })
+        .style("font-size", function(d) { return ~~(Math.sqrt(d.size * TotalSquare * 0.8 / 2) - 1) * 0.5  + "px"; })
         .style("font-family", "Impact")
         .attr("text-anchor", "middle")
         .attr("transform", function(d) {
