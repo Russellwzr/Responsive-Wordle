@@ -16,13 +16,10 @@ A javascript project implemented by Box2D.js & D3.js that can make the word clou
 * DrawTheWordle.js
 * ForceToWordle.js
 
-![Responsive Wordle_page-0014](materials\Responsive Wordle_page-0014.jpg)
+<img src="materials\Responsive Wordle_page-0014.jpg" style="zoom:80%;" />
+<img src="materials\Responsive Wordle_page-0015.jpg" style="zoom:80%;" />
+<img src="materials\Responsive Wordle_page-0016.jpg" style="zoom:80%;" />
+<img src="materials\Responsive Wordle_page-0017.jpg" style="zoom:80%;" />
 
-
-![Responsive Wordle_page-0014](materials\Responsive Wordle_page-0015.jpg)
-
-![Responsive Wordle_page-0014](materials\Responsive Wordle_page-0016.jpg)
-
-![Responsive Wordle_page-0014](materials\Responsive Wordle_page-0017.jpg)
 
 * 2020.10 — Shandong University
