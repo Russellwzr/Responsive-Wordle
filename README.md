@@ -10,16 +10,16 @@ A javascript project implemented by Box2D.js & D3.js that can make the word clou
 
 * Animated transition
 
-### Related Documents
+### Implementation Code
 
 * Responsive_Wordle.js
 * DrawTheWordle.js
 * ForceToWordle.js
 
-<img src="materials\Responsive Wordle_page-0014.jpg" style="zoom:80%;" />
-<img src="materials\Responsive Wordle_page-0015.jpg" style="zoom:80%;" />
-<img src="materials\Responsive Wordle_page-0016.jpg" style="zoom:80%;" />
-<img src="materials\Responsive Wordle_page-0017.jpg" style="zoom:80%;" />
+<img src="https://github.com/Russellwzr/Responsive-Wordle/blob/master/materials/Responsive Wordle_page-0014.jpg" style="zoom:80%;" />
+<img src="https://github.com/Russellwzr/Responsive-Wordle/blob/master/materials/Responsive Wordle_page-0015.jpg" style="zoom:80%;" />
+<img src="https://github.com/Russellwzr/Responsive-Wordle/blob/master/materials/Responsive Wordle_page-0016.jpg" style="zoom:80%;" />
+<img src="https://github.com/Russellwzr/Responsive-Wordle/blob/master/materials/Responsive Wordle_page-0017.jpg" style="zoom:80%;" />
 
 
-* 2020.10 — Shandong University
+* 2020.10 — Interdisciplinary Research Center
