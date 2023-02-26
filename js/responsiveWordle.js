@@ -61,6 +61,7 @@ const responsiveWordle = function () {
         })
         .sort((a, b) => b.size - a.size)
 
+    // word weight normalization
     let total_num = 0
 
     for (let i = 0; i < data.length; i++) {
@@ -98,16 +99,12 @@ function calWordBox(data, size) {
       return ~~(Math.sqrt((d.size * drawArea * 0.8) / 2) - 1) * 0.5 + 'px'
     })
     .style('font-family', (d) => d.font)
-    .attr('text-anchor', 'middle')
-    .attr('transform', (d) => {
-      'translate(' + [size[0] / 2, size[1] / 2] + ')rotate(' + d.rotate + ')'
-    })
+    .attr('transform', (d) => 'rotate(' + d.rotate + ')')
     .text((d) => d.text)
 
   const groupElement = document.querySelectorAll('text')
-  let i = -1
-  while (++i < data.length) {
-    const bboxGroup = groupElement[i].getBoundingClientRect()
+  for (let i = 0; i < data.length; i++) {
+    const bboxGroup = groupElement[i].getBBox()
     data[i].width = bboxGroup.width
     data[i].height = bboxGroup.height
   }
@@ -190,16 +187,6 @@ function spiralLayout(words, size, tags) {
     }
 
     if (finishFlag) {
-      let xx, yy
-      if (!words[i].rotate) {
-        xx = words[i].x0 + words[i].width / 2 - x
-        yy = words[i].y0 - words[i].height / 5 - y
-      } else {
-        xx = words[i].x0 + words[i].width / 2 - x
-        yy = words[i].y0 - words[i].height / 5 - y
-      }
-      words[i].x = xx / size[0]
-      words[i].y = yy / size[1]
       words[i].centerX = (words[i].x0 + words[i].width / 2 - x) / size[0]
       words[i].centerY = (words[i].y0 - words[i].height / 2 - y) / size[1]
       words[i].rateWidth = words[i].width / size[0]

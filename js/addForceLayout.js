@@ -37,16 +37,9 @@ function forceToWordle(words, centerX, centerY) {
     let w = centerX * 2,
       h = centerY * 2
 
-    words = drawWithScale(words, w, h)
+    words = scaleWordBox(words, w, h)
 
-    let i = -1,
-      n = words.length,
-      groupElement = document.querySelectorAll('text')
-
-    while (++i < n) {
-      let bboxGroup = groupElement[i].getBoundingClientRect()
-      words[i].rateWidth = bboxGroup.width / w
-      words[i].rateHeight = bboxGroup.height / h
+    for (let i = 0; i < words.length; i++) {
       rectBox(
         words[i].centerX * w + centerX,
         words[i].centerY * h + centerY,
@@ -56,7 +49,7 @@ function forceToWordle(words, centerX, centerY) {
       )
     }
 
-    drawWithoutScale(words, centerX * 2, centerY * 2)
+    drawWordle(words, w, h, false)
   }
 
   function reSetTheWordBox() {
@@ -211,14 +204,6 @@ function forceToWordle(words, centerX, centerY) {
         words[idx].centerX = (updatePos.x * worldScale - centerX) / (centerX * 2)
         words[idx].centerY = (updatePos.y * worldScale - centerY) / (centerY * 2)
 
-        if (!words[idx].rotate) {
-          words[idx].x = words[idx].centerX
-          words[idx].y = words[idx].centerY + (3 / 10) * words[idx].rateHeight
-        } else {
-          words[idx].x = words[idx].centerX - (3 / 10) * words[idx].rateWidth
-          words[idx].y = words[idx].centerY
-        }
-
         idx--
 
         if (idx < 0) {
@@ -236,7 +221,6 @@ function forceToWordle(words, centerX, centerY) {
 
     if (~~(0.4 * w) != centerX || ~~(0.4 * h) != centerY || iterNum >= 30) {
       clearInterval(setInter)
-      reSetTheWordBox()
       return
     }
 
