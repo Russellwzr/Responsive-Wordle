@@ -110,7 +110,15 @@
         forceToWordle(words, ~~(0.4 * w), ~~(0.4 * h))
       }
 
-      window.addEventListener('resize', changeWindowSize)
+      function debounce(func, ms) {
+        let timeout
+        return function () {
+          clearTimeout(timeout)
+          timeout = setTimeout(() => func.apply(this, arguments), ms)
+        }
+      }
+
+      window.addEventListener('resize', debounce(changeWindowSize, 150))
 
       changeWindowSize()
     </script>
