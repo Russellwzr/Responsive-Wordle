@@ -1,39 +1,32 @@
+const fill = d3.scale.category20()
+
 // draw wordle with fontSize scale
 function drawWithScale(words, w, h) {
-  var obj = document.getElementById('vis')
-  obj.innerHTML = ''
+  document.getElementById('vis').innerHTML = ''
 
   let rate = w * h,
     j = 0
 
-  d3.select('#vis')
-    .append('svg')
-    .attr('width', w)
-    .attr('height', h)
+  const svg = d3.select('#vis').append('svg').attr('width', w).attr('height', h)
+
+  svg
     .append('g')
     .attr('transform', 'translate(' + w / 2 + ',' + h / 2 + ')')
     .selectAll('text')
     .data(words)
     .enter()
     .append('text')
-    .attr('id', function (d) {
-      j++
-      return 'id' + j
-    })
+    .attr('x', (d) => d.x0 - w / 2)
+    .attr('y', (d) => d.y0 - h / 2)
+    .attr('id', (d) => 'id' + ++j)
     .style('font-size', function (d) {
       return ~~(Math.sqrt((d.size * rate) / 2) - 1) + 'px'
     })
-    .style('font-family', 'Impact')
-    .style('fill', function (d, i) {
-      return fill(i)
-    })
+    .style('font-family', (d) => d.font)
+    .style('fill', (d, i) => fill(i))
     .attr('text-anchor', 'middle')
-    .attr('transform', function (d) {
-      return 'translate(' + [d.x * w, d.y * h] + ')rotate(' + d.rotate + ')'
-    })
-    .text(function (d) {
-      return d.text
-    })
+    .attr('transform', (d) => 'rotate(' + d.rotate + ')')
+    .text((d) => d.text)
 
   let n = words.length
   // adjust the fontSize to ensure that the word is within the bounding box
@@ -41,10 +34,10 @@ function drawWithScale(words, w, h) {
     let curId = '#id' + i,
       curFontSize = ~~(Math.sqrt((words[i - 1].size * rate) / 2) - 1)
 
-    words[i - 1].tmpSize = curFontSize
+    words[i - 1].finalSize = curFontSize
 
     let groupElement = document.getElementById('id' + i)
-    let bboxGroup = groupElement.getBoundingClientRect()
+    let bboxGroup = groupElement.getBBox()
 
     let curX = words[i - 1].centerX * w,
       curY = words[i - 1].centerY * h
@@ -64,8 +57,8 @@ function drawWithScale(words, w, h) {
       words[i - 1].rotate = 90 - words[i - 1].rotate
     }
 
-    let fontBounding = new Object()
-    let boxBounding = new Object()
+    let fontBounding = {}
+    let boxBounding = {}
 
     fontBounding.x0 = curX - curWidth / 2
     fontBounding.y0 = curY + curHeight / 2
@@ -123,7 +116,7 @@ function drawWithScale(words, w, h) {
         'transform',
         'translate(' + [curX, fontBounding.y0 - curHeight / 5] + ')rotate(' + words[i - 1].rotate + ')',
       ).style('font-size', curFontSize + 'px')
-      words[i - 1].tmpSize = curFontSize
+      words[i - 1].finalSize = curFontSize
     }
     // vertically direction
     else {
@@ -131,22 +124,19 @@ function drawWithScale(words, w, h) {
         'transform',
         'translate(' + [fontBounding.x0 + curWidth / 5, curY] + ')rotate(' + words[i - 1].rotate + ')',
       ).style('font-size', curFontSize + 'px')
-      words[i - 1].tmpSize = curFontSize
+      words[i - 1].finalSize = curFontSize
     }
   }
 
   // delete words whose fontSize is too small
-  words = words.filter((item) => {
-    return item.tmpSize > 15
-  })
+  words = words.filter((item) => item.finalSize > 15)
 
   return words
 }
 
 // draw wordle without fontSize scale
 function drawWithoutScale(words, w, h) {
-  var obj = document.getElementById('vis')
-  obj.innerHTML = ''
+  document.getElementById('vis').innerHTML = ''
 
   let j = 0
 
@@ -160,33 +150,19 @@ function drawWithoutScale(words, w, h) {
     .data(words)
     .enter()
     .append('text')
-    .attr('id', function (d) {
-      j++
-      return 'id' + j
-    })
-    .style('font-size', function (d) {
-      return d.tmpSize + 'px'
-    })
-    .style('font-family', 'Impact')
-    .style('fill', function (d, i) {
-      return fill(i)
-    })
+    .attr('id', (d) => 'id' + ++j)
+    .style('font-size', (d) => d.finalSize + 'px')
+    .style('font-family', (d) => d.font)
+    .style('fill', (d, i) => fill(i))
     .attr('text-anchor', 'middle')
-    .attr('transform', function (d) {
-      return 'translate(' + [d.x * w, d.y * h] + ')rotate(' + d.rotate + ')'
-    })
-    .text(function (d) {
-      return d.text
-    })
+    .attr('transform', (d) => 'translate(' + [d.x * w, d.y * h] + ')rotate(' + d.rotate + ')')
+    .text((d) => d.text)
 }
 
 function startUpdateTransition(words, w, h) {
-  let n = words.length
-  let j = 1
-  for (let i = 0; i < n; i++, j++) {
-    let word = d3.select('#id' + j)
-    let endfontsize = words[i].tmpSize + 'px'
-    let endtransform = 'translate(' + [words[i].x * w, words[i].y * h] + ')rotate(' + words[i].rotate + ')'
-    word.transition().duration(200).style('font-size', endfontsize).attr('transform', endtransform)
+  for (let i = 0; i < words.length; i++) {
+    const word = d3.select('#id' + (i + 1))
+    const endtransform = 'translate(' + [words[i].x * w, words[i].y * h] + ')rotate(' + words[i].rotate + ')'
+    word.transition().duration(60).attr('transform', endtransform)
   }
 }

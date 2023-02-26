@@ -88,8 +88,6 @@
         { text: 'Porter', size: 18 },
       ]
 
-      const fill = d3.scale.category20()
-
       const layout = responsiveWordle()
         .size([~~(0.8 * initWidth), ~~(0.8 * initHeight)])
         .words(inputTags)
@@ -105,8 +103,7 @@
       const words = layout.start()
 
       function changeWindowSize() {
-        let obj = document.getElementById('vis')
-        obj.innerHTML = ''
+        document.getElementById('vis').innerHTML = ''
 
         let w = document.documentElement.clientWidth
         let h = document.documentElement.clientHeight
